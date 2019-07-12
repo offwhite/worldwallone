@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset='utf-8'>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<title>World Wall One</title>
+<meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="+hSLDrm3XQay7RxqMRh9Ygtce224KQaTVBCezfahndkiuGQAl3J0/keJ0G41KgEx4lwdWR+y1BC0zKP6Y4AyOg==" />
+<link rel="stylesheet" media="all" href="the_wall.css" data-turbolinks-track="reload" />
+<script src="brush_generator.js"></script>
+</head>
+<body>
+  <table style="background: white">
+    <tr>
+      <td>
+        Inner
+      </td>
+      <td>
+        radius
+        <input id="inner_min" type='number' value="20" />
+      </td>
+      <td>
+        count
+        <input id="inner_count" type='number' value="50" />
+      </td>
+      <td>
+        max_size
+        <input id="inner_size" type='number' value="3" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        mid
+      </td>
+      <td>
+        radius
+        <input id="mid_min" type='number' value="30" />
+      </td>
+      <td>
+        count
+        <input id="mid_count" type='number' value="50" />
+      </td>
+      <td>
+        max_size
+        <input id="mid_size" type='number' value="3" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        out
+      </td>
+      <td>
+        radius
+        <input id="out_min" type='number' value="50" />
+      </td>
+      <td>
+        count
+        <input id="out_count" type='number' value="50" />
+      </td>
+      <td>
+        max_size
+        <input id="out_size" type='number' value="1" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <button id="generate" value="replay">generate</button>
+      </td>
+    </tr>
+  </table>
+  <textarea id="brush_file_output"></textarea>
+  <div id="brushPreview" style="position: absolute; right:0; width: 300px; height: 300px; top: 0; background: white"></div>
+</body>
