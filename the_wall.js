@@ -1,11 +1,4 @@
 app = {
-  load: function(){
-    var script = document.createElement('script')
-    script.onload = app.init
-    script.src = 'brushes/brushes.js'
-    document.head.appendChild(script)
-  },
-
   init: function(){
     app.body = document.getElementsByTagName("BODY")[0]
     app.container = document.getElementById("theWall")
@@ -14,7 +7,6 @@ app = {
     app.mouseDown = false
     app.log = []
     app.setDefaults()
-    brush.init()
     app.creatCanvas()
     app.eventListeners()
   },
@@ -42,23 +34,21 @@ app = {
   },
 
   setDefaults: function(){
-    app.brushSize = 80
-    app.brushOpacity = 0.2
-    app.color = 'black'
+    app.brushSize = 40
+    app.brushOpacity = 0.1
+    app.color = 'red'
   },
 
   setOpacity: function(val){
     app.brushOpacity = val
-    brush.setBrush()
   },
 
   setSize: function(size){
     app.brushSize = size
   },
 
-  setColor: function(color){
-    app.color = color
-    brush.setBrush()
+  setColor: function(r,g,b){
+    app.color = [r,g,b]
   },
 
   onMouseDown: function(e){
@@ -67,6 +57,11 @@ app = {
     app.mouseY = e.clientY
     app.prevMouseX = app.mouseX
     app.prevMouseY = app.mouseY
+    app.ctx.globalAlpha = app.brushOpacity
+    app.ctx.strokeStyle = app.color
+    app.ctx.lineWidth = app.brushSize
+    app.ctx.lineJoin = app.ctx.lineCap = 'round'
+    //app.ctx.shadowBlur = 10
     app.makeMark(true)
   },
 
@@ -87,28 +82,21 @@ app = {
     if(recordToLog){
       app.logState()
     }
-    app.setBrushStroke()
-
-    app.ctx.globalAlpha = 1//app.brushOpacity
 
     for (var i = 0; i < app.pointDistance; i++) {
       x = app.prevMouseX + (Math.sin(app.pointAngle) * i) - (app.brushSize / 2);
       y = app.prevMouseY + (Math.cos(app.pointAngle) * i) - (app.brushSize / 2);
-      app.ctx.drawImage(brush.current(), x, y, app.brushSize, app.brushSize);
-    }
-  },
+      //app.ctx.drawImage(brush.current(), x, y, app.brushSize, app.brushSize);
+      var radgrad = ctx.createRadialGradient(x,y,10,x,y,20);
 
-  setBrushStroke: function(){
-    Xa = app.prevMouseX; Ya = app.prevMouseY;
-    Xb = app.mouseX;     Yb = app.mouseY;
-    // stroke distance
-    xD = (Xa < Xb) ? Xb - Xa : Xa - Xb
-    yD = (Ya < Yb) ? Yb - Ya : Ya - Yb
-    hyp = Math.sqrt((xD * xD) + (yD * yD))
-    app.pointDistance = hyp
-    // stroke angle
-    app.pointAngle = Math.atan2(Xb-Xa,Yb-Ya);
-    // stroke size
+      radgrad.addColorStop(0, '#000');
+      radgrad.addColorStop(0.5, 'rgba(0,0,0,0.5)');
+      radgrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+      //app.ctx.globalAlpha = 0.1
+      app.ctx.fillStyle = radgrad;
+      app.ctx.fillRect(x-20, y-20, 40, 40);
+    }
   },
 
   clearCanvas: function(recordToLog = true){
@@ -171,62 +159,14 @@ app = {
   }
 }
 
-brush = {
-  init: function(){
-    brush.brushes = loadBrushes()
-    brush.selectedBrush = 0
-    brush.container = document.getElementById("currentBrushHolder")
-    brush.creatCanvas()
-  },
-
-  creatCanvas: function(){
-    brush.canvas = document.createElement('canvas')
-    brush.canvas.id = "currentBrush"
-    brush.canvas.style.zIndex = 9
-    brush.canvas.style.position = "absolute"
-    brush.canvas.width = 100
-    brush.canvas.height = 100
-    brush.container.appendChild(brush.canvas)
-
-    brush.ctx = brush.canvas.getContext("2d")
-    brush.setBrush()
-  },
-
-  setBrush: function(){
-    brush.canvas.width = 100
-    brush.canvas.height = 100
-    brush.ctx.fillStyle = app.color
-    brush.ctx.globalAlpha = app.brushOpacity
-    brush.paintBrush()
-    brush.output = new Image
-    brush.output.src = brush.canvas.toDataURL()
-  },
-
-  paintBrush: function(){
-    b = brush.brushes[brush.selectedBrush]
-
-    for(i=0;i<b.length;i++){
-      brush.spat(b[i])
-    }
-  },
-
-  spat: function(args){
-    //brush.ctx.globalAlpha = args[3]
-    brush.ctx.beginPath()
-    brush.ctx.arc(args[0], args[1], args[2], 0, 2 * Math.PI)
-    brush.ctx.fill()
-  },
-
-  current: function(){
-    return brush.output
-  }
-}
-
 tools = {
   init: function(){
-    document.getElementById("opacity").onchange = function(){app.setOpacity(parseInt(this.value) / 1000)}
+    document.getElementById("opacity").onchange = function(){app.setOpacity(parseInt(this.value) / 100)}
     document.getElementById("size").onchange = function(){app.setSize(this.value)}
-    document.getElementById("color").onchange = function(){app.setColor(this.value)}
+    document.getElementById("color").onchange = function(){
+      str = this.value.split(',')
+      app.setColor(str[0],str[1],str[2])
+    }
     document.getElementById("clear").onclick = app.clearCanvas
     document.getElementById("replay").onclick = app.replay
     document.getElementById("rebuild").onclick = app.rebuildFromLog
@@ -236,6 +176,6 @@ tools = {
 }
 
 window.onload = function(){
-  app.load();
+  app.init();
   tools.init();
 }
