@@ -43,7 +43,8 @@ app = {
 
   setDefaults: function(){
     app.brushSize = 80
-    app.brushOpacity = 0.2
+    app.brushOpacity = 0.01
+    brush.selectedBrush = 0
     app.color = 'black'
   },
 
@@ -58,6 +59,11 @@ app = {
 
   setColor: function(color){
     app.color = color
+    brush.setBrush()
+  },
+
+  setBrush: function(index){
+    brush.selectedBrush = index
     brush.setBrush()
   },
 
@@ -89,7 +95,7 @@ app = {
     }
     app.setBrushStroke()
 
-    app.ctx.globalAlpha = 1//app.brushOpacity
+    app.ctx.globalAlpha = app.brushOpacity
 
     for (var i = 0; i < app.pointDistance; i++) {
       x = app.prevMouseX + (Math.sin(app.pointAngle) * i) - (app.brushSize / 2);
@@ -174,7 +180,6 @@ app = {
 brush = {
   init: function(){
     brush.brushes = loadBrushes()
-    brush.selectedBrush = 0
     brush.container = document.getElementById("currentBrushHolder")
     brush.creatCanvas()
   },
@@ -196,7 +201,7 @@ brush = {
     brush.canvas.width = 100
     brush.canvas.height = 100
     brush.ctx.fillStyle = app.color
-    brush.ctx.globalAlpha = app.brushOpacity
+    brush.ctx.globalAlpha = 1//app.brushOpacity
     brush.paintBrush()
     brush.output = new Image
     brush.output.src = brush.canvas.toDataURL()
@@ -227,6 +232,7 @@ tools = {
     document.getElementById("opacity").onchange = function(){app.setOpacity(parseInt(this.value) / 1000)}
     document.getElementById("size").onchange = function(){app.setSize(this.value)}
     document.getElementById("color").onchange = function(){app.setColor(this.value)}
+    document.getElementById("brush").onchange = function(){app.setBrush(parseInt(this.value))}
     document.getElementById("clear").onclick = app.clearCanvas
     document.getElementById("replay").onclick = app.replay
     document.getElementById("rebuild").onclick = app.rebuildFromLog
