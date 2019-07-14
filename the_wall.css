@@ -1,5 +1,5 @@
 body{
-  background: #333333;
+  background: #fff;
   padding: 0px;
   margin: 0;
 }
@@ -9,7 +9,7 @@ body{
   height: calc(100vh - 50px);
   position: absolute;
   overflow: hidden;
-  cursor: crosshair;
+  cursor: none;
 }
 
 #tools{
@@ -20,6 +20,10 @@ body{
   width: 100%;
   z-index: 100;
   background: black;
+}
+
+canvas{
+  position: absolute;
 }
 
 #currentBrushHolder{

@@ -2,180 +2,148 @@ app = {
   init: function(){
     app.body = document.getElementsByTagName("BODY")[0]
     app.container = document.getElementById("theWall")
-    app.width = window.innerWidth
-    app.height = window.innerHeight
     app.mouseDown = false
     app.log = []
-    app.setDefaults()
+    app.defaults()
     app.creatCanvas()
     app.eventListeners()
+    tools.init()
+  },
+
+  defaults: function(){
+    app.brushSize = 100
+    app.color = 'black'
+    app.opacity = 1
+    app.hardness = 50
   },
 
   eventListeners: function(){
-    app.body.onresize = app.resize;
-    app.canvas.onmousedown = app.onMouseDown
-    app.canvas.onmouseup = app.onMouseUp
-    app.canvas.onmouseenter = app.onMouseUp
-    app.canvas.onmousemove = app.onMouseMove
+    app.uiCanvas.onmousedown = app.onMouseDown
+    app.uiCanvas.onmouseup = app.onMouseUp
+    app.uiCanvas.onmouseenter = app.onMouseUp
+    app.uiCanvas.onmousemove = app.onMouseMove
   },
 
   creatCanvas: function(){
-    app.canvas = document.createElement('canvas');
-    app.canvas.id = "theWallCanvas";
-    app.canvas.style.zIndex = 8;
-    app.canvas.style.position = "absolute";
-    app.clearCanvas()
-    app.container.appendChild(app.canvas)
+    app.wallCanvas = document.createElement('canvas')
+    app.wallCanvas.id = "theWallCanvas"
+    app.wallCanvas.style.zIndex = 8
+    app.wallCtx = app.wallCanvas.getContext("2d")
+    app.wallCanvas.width = 2000
+    app.wallCanvas.height = 2000
+    app.container.appendChild(app.wallCanvas)
+
+    app.uiCanvas = document.createElement('canvas')
+    app.uiCanvas.id = "uiCanvas"
+    app.uiCanvas.style.zIndex = 9
+    app.uiCtx = app.uiCanvas.getContext("2d")
+    app.uiCanvas.width = 2000
+    app.uiCanvas.height = 2000
+    app.container.appendChild(app.uiCanvas)
   },
 
-  resize: function(){
-    app.width = window.innerWidth
-    app.height = window.innerHeight
+  onMouseDown: function(e){
+    app.mouseDown = true
+    app.cs = [app.mouse]
   },
 
-  setDefaults: function(){
-    app.brushSize = 40
-    app.brushOpacity = 0.1
-    app.color = 'red'
+  onMouseMove: function(e){
+    app.mouse = {x: e.clientX, y: e.clientY}
+    app.renderCursor()
+    if(app.mouseDown){
+      app.cs.push(app.mouse)
+      app.renderStroke(app.cs, app.uiCtx)
+    }
+  },
+
+  onMouseUp: function(){
+    if(!app.mouseDown) return
+    app.mouseDown = false
+    app.renderCursor()
+    app.renderStroke(app.cs, app.wallCtx)
+  },
+
+  renderStroke: function(arr, ctx){
+    var softness = ((app.brushSize / 3) * ((100 - app.hardness) / 100))
+    ctx.globalAlpha = app.opacity
+    ctx.strokeStyle = app.color
+    ctx.lineWidth = (app.brushSize - (softness*1.2))
+    ctx.filter = 'blur('+softness+'px)';
+    ctx.lineJoin = ctx.lineCap = 'round'
+    ctx.beginPath();
+    ctx.moveTo(arr[0].x, arr[0].y)
+    for(i=0;i<arr.length;i++){
+      ctx.lineTo(arr[i].x, arr[i].y);
+    }
+    ctx.stroke()
+
+    ctx.globalAlpha = 0.8
+    ctx.lineWidth = 1
+    ctx.strokeStyle = '#000'
+    ctx.filter = 'none'
+  },
+
+  renderCursor: function(){
+    app.clearUiCanvas()
+    app.uiCtx.beginPath()
+    app.uiCtx.arc(app.mouse.x, app.mouse.y, (app.brushSize/2), 0, 2 * Math.PI)
+    app.uiCtx.stroke()
+  },
+
+  clearUiCanvas: function(){
+    app.uiCtx.clearRect(0, 0, app.uiCanvas.width, app.uiCanvas.height);
+  }
+}
+
+tools = {
+  init: function(){
+    tools.opacity = document.getElementById("opacity")
+    tools.size = document.getElementById("size")
+    tools.color = document.getElementById("color")
+    tools.hardness = document.getElementById("hardness")
+    tools.clear = document.getElementById("clear")
+
+    // set current vals
+    tools.opacity.value = app.opacity * 100
+    tools.size.value = app.brushSize
+    tools.color.value = app.color
+    tools.hardness.value = app.hardness
+
+    //events
+    tools.opacity.onchange = function(){tools.setOpacity(parseInt(this.value) / 100)}
+    tools.size.onchange = function(){tools.setSize(this.value)}
+    tools.hardness.onchange = function(){tools.sethardness(this.value)}
+    tools.color.onchange = function(){tools.setColor(this.value)}
+    tools.clear.onclick = tools.clearCanvas
+  },
+
+  clearCanvas: function(){
+    app.ctx.restore();
+    console.log('restored')
   },
 
   setOpacity: function(val){
-    app.brushOpacity = val
+    app.opacity = val
   },
 
   setSize: function(size){
     app.brushSize = size
   },
 
-  setColor: function(r,g,b){
-    app.color = [r,g,b]
+  setSize: function(size){
+    app.brushSize = size
   },
 
-  onMouseDown: function(e){
-    app.mouseDown = true
-    app.mouseX = e.clientX
-    app.mouseY = e.clientY
-    app.prevMouseX = app.mouseX
-    app.prevMouseY = app.mouseY
-    app.ctx.globalAlpha = app.brushOpacity
-    app.ctx.strokeStyle = app.color
-    app.ctx.lineWidth = app.brushSize
-    app.ctx.lineJoin = app.ctx.lineCap = 'round'
-    //app.ctx.shadowBlur = 10
-    app.makeMark(true)
+  sethardness: function(val){
+    app.hardness = val
   },
 
-  onMouseUp: function(e){
-    app.mouseDown = false
+  setColor: function(colur){
+    app.color = colur
   },
-
-  onMouseMove: function(e){
-    if(app.mouseDown == false) return
-    app.prevMouseX = app.mouseX
-    app.prevMouseY = app.mouseY
-    app.mouseX = e.clientX
-    app.mouseY = e.clientY
-    app.makeMark(true)
-  },
-
-  makeMark: function(recordToLog = true){
-    if(recordToLog){
-      app.logState()
-    }
-
-    for (var i = 0; i < app.pointDistance; i++) {
-      x = app.prevMouseX + (Math.sin(app.pointAngle) * i) - (app.brushSize / 2);
-      y = app.prevMouseY + (Math.cos(app.pointAngle) * i) - (app.brushSize / 2);
-      //app.ctx.drawImage(brush.current(), x, y, app.brushSize, app.brushSize);
-      var radgrad = ctx.createRadialGradient(x,y,10,x,y,20);
-
-      radgrad.addColorStop(0, '#000');
-      radgrad.addColorStop(0.5, 'rgba(0,0,0,0.5)');
-      radgrad.addColorStop(1, 'rgba(0,0,0,0)');
-
-      //app.ctx.globalAlpha = 0.1
-      app.ctx.fillStyle = radgrad;
-      app.ctx.fillRect(x-20, y-20, 40, 40);
-    }
-  },
-
-  clearCanvas: function(recordToLog = true){
-    app.canvas.width = 2000;
-    app.canvas.height = 2000;
-
-    app.ctx = app.canvas.getContext("2d")
-    app.ctx.fillStyle = "white"
-    app.ctx.fillRect(0, 0, app.canvas.width, app.canvas.height)
-    if(recordToLog){
-      app.log.push(['clear'])
-    }
-  },
-
-  logState: function(){
-    app.log.push([
-      app.prevMouseX,app.prevMouseY,
-      app.mouseX,app.mouseY,
-      app.brushOpacity
-    ])
-  },
-
-  replay: function(){
-    //app.clearCanvas()
-    app.replayLog(0)
-    //console.log(app.log)
-  },
-
-  rebuildFromLog: function(){
-    clearTimeout(app.logPlay)
-    app.clearCanvas(false)
-    for(i=0;i<app.log.length;i++){
-      app.prevMouseX = app.log[i][0]
-      app.prevMouseY = app.log[i][1]
-      app.mouseX = app.log[i][2]
-      app.mouseY = app.log[i][3]
-      app.brushOpacity = app.log[i][4]
-      app.makeMark(false)
-    }
-  },
-
-  undo: function(){
-    app.log.pop()
-    app.rebuildFromLog()
-  },
-
-  replayLog: function(i){
-    if(app.log[i] == undefined){return}
-    if(app.log[i] == 'clear'){
-      app.clearCanvas(false)
-    }else{
-      app.prevMouseX = app.log[i][0]
-      app.prevMouseY = app.log[i][1]
-      app.mouseX = app.log[i][2]
-      app.mouseY = app.log[i][3]
-      app.brushOpacity = app.log[i][4]
-      app.makeMark(false)
-    }
-    app.logPlay = setTimeout(function(){app.replayLog(i+1)},1)
-  }
 }
 
-tools = {
-  init: function(){
-    document.getElementById("opacity").onchange = function(){app.setOpacity(parseInt(this.value) / 100)}
-    document.getElementById("size").onchange = function(){app.setSize(this.value)}
-    document.getElementById("color").onchange = function(){
-      str = this.value.split(',')
-      app.setColor(str[0],str[1],str[2])
-    }
-    document.getElementById("clear").onclick = app.clearCanvas
-    document.getElementById("replay").onclick = app.replay
-    document.getElementById("rebuild").onclick = app.rebuildFromLog
-    document.getElementById("undo").onclick = app.undo
-
-  }
-}
 
 window.onload = function(){
-  app.init();
-  tools.init();
+  app.init()
 }
