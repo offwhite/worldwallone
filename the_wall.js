@@ -7,7 +7,7 @@ app = {
     app.defaults()
     app.creatCanvas()
     app.eventListeners()
-    tools.init()
+    ui.init()
   },
 
   defaults: function(){
@@ -93,54 +93,6 @@ app = {
   clearUiCanvas: function(){
     app.uiCtx.clearRect(0, 0, app.uiCanvas.width, app.uiCanvas.height);
   }
-}
-
-tools = {
-  init: function(){
-    tools.opacity = document.getElementById("opacity")
-    tools.size = document.getElementById("size")
-    tools.color = document.getElementById("color")
-    tools.hardness = document.getElementById("hardness")
-    tools.clear = document.getElementById("clear")
-
-    // set current vals
-    tools.opacity.value = app.opacity * 100
-    tools.size.value = app.brushSize
-    tools.color.value = app.color
-    tools.hardness.value = app.hardness
-
-    //events
-    tools.opacity.onchange = function(){tools.setOpacity(parseInt(this.value) / 100)}
-    tools.size.onchange = function(){tools.setSize(this.value)}
-    tools.hardness.onchange = function(){tools.sethardness(this.value)}
-    tools.color.onchange = function(){tools.setColor(this.value)}
-    tools.clear.onclick = tools.clearCanvas
-  },
-
-  clearCanvas: function(){
-    app.ctx.restore();
-    console.log('restored')
-  },
-
-  setOpacity: function(val){
-    app.opacity = val
-  },
-
-  setSize: function(size){
-    app.brushSize = size
-  },
-
-  setSize: function(size){
-    app.brushSize = size
-  },
-
-  sethardness: function(val){
-    app.hardness = val
-  },
-
-  setColor: function(colur){
-    app.color = colur
-  },
 }
 
 
