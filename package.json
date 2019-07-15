@@ -1,0 +1,23 @@
+{
+  "name": "world_wall_one",
+  "version": "0.0.1",
+  "description": "Its a big wall",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/offwhite/worldwallone.git"
+  },
+  "author": "James White",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/offwhite/worldwallone/issues"
+  },
+  "homepage": "https://github.com/offwhite/worldwallone#readme"
+}
