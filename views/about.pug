@@ -1,0 +1,15 @@
+html
+  head
+    title= title
+  body
+    ABOUT
+    h4= title
+    .message(data-test= 'testing')
+      = message
+    a(href = 'url') URL
+    .test
+      | Greetings from #{name}
+      
+    each mark in marks
+      .mark
+        = mark.color

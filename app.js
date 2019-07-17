@@ -1,4 +1,7 @@
 const express = require('express')
+const mongoose = require('mongoose')
+const path = require('path')
+const fs = require('fs')
 const app = express()
 
 // middleware
@@ -7,8 +10,7 @@ const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 
 // routes
-const indexRouter = require('./routes/index')
-const strokeRouter = require('./routes/stroke')
+const routes = require('./config/routes')
 
 // options
 const port = 4000
@@ -18,9 +20,25 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(logger('tiny'))
 
+// static files
+app.use(express.static('public'))
+
+// set render engine
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'pug')
+
+// connect to db
+mongoose.connect('mongodb://localhost/wall_db',{ useNewUrlParser: true })
+
+// load models
+const models = path.join(__dirname, 'models')
+fs.readdirSync(models)
+  .filter(file => ~file.indexOf('.js'))
+  .forEach(file => require(path.join(models, file)))
+
+
 // routing
-app.use('/', indexRouter);
-app.use('/stroke', strokeRouter);
+app.use('/', routes);
 
 // start server
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
