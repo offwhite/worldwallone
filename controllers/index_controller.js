@@ -1,11 +1,16 @@
 const ActionController = require('./action_controller.js')
 
 class IndexController extends ActionController {
-  index(req, res, next){ controller.controllers['index'](req, res, next) }
-  about(req, res, next){ controller.controllers['about'](req, res, next) }
-  error(req, res, next){ controller.controllers['error'](req, res, next) }
+  constructor(){
+    super()
+    this.category = 'index'
+  }
+
+  index(req, res, next){ self.controller('index', req, res, next) }
+  about(req, res, next){ self.controller('about', req, res, next) }
+  error(req, res, next){ self.controller('error', req, res, next) }
 }
 
-const controller = new IndexController
+const self = new IndexController
 
-module.exports = controller
+module.exports = self

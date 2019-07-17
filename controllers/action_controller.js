@@ -1,20 +1,13 @@
 const path = require('path')
 const fs = require('fs')
 
-const actionController = class {
-  constructor(){
-    this.controllers = {}
-
-    // load controllers
-    const controlerDirs = path.join(__dirname, '/index')
-    fs.readdirSync(controlerDirs)
-      .filter(file => ~file.indexOf('.js'))
-      .forEach(file => {
-        let name = file.replace('.js','')
-        this.controllers[name] = require(path.join(controlerDirs, file))
-      })
+const ActionController = class {
+  // lazy load controllers
+  controller(name, req, res, next){
+    let contr = require('./'+this.category+'/'+name+'.js')
+    contr(req, res, next)
   }
 }
 
 
-module.exports = actionController;
+module.exports = ActionController;

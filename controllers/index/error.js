@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const error = function(req, res, next){
-  res.render('error')
+  res.render('index/error')
 }
 
 module.exports = error
