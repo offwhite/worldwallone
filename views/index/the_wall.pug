@@ -1,0 +1,16 @@
+html
+  head
+    title World Wall One
+    link(href = '/stylesheets/the_wall.css', rel="stylesheet", type="text/css")
+    script(src = '/javascripts/canvas.js')
+    script(src = '/javascripts/ui.js')
+    script sid="#{sessionId}"
+  body
+    #theWall
+    #menu
+      input#opacity(type: 'number', class: 'slider')
+      input#size(type: 'number')
+      input#hardness(type: 'number')
+      input#color(type: 'text')
+      button#clear(value: 'clear')
+        | Clear

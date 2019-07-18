@@ -1,5 +1,6 @@
 # Ignore bundler config.
 /.env
+/config/variables.js
 
 .DS_Store
 

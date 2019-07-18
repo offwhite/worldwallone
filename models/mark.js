@@ -2,9 +2,17 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const MarkSchema = new Schema({
-   user_id: { type: Number, default: 0 },
-   points: { type: String, default: '' },
-   color: { type: String, default: '' }
+   sessionId:  { type: String, default: '' },
+   pointsJson: { type: String, default: '' },
+   color:      { type: String, default: '' },
+   opacity:    { type: Number, default: 0 },
+   brushSize:  { type: Number, default: 0 },
+   hardness:   { type: Number},
+   createdAt:  { type: Date, default: Date.now }
 })
+
+MarkSchema.methods.points = function pointsArr (cb) {
+  return JSON.parse(this.pointsJson)
+};
 
 mongoose.model('Mark', MarkSchema)

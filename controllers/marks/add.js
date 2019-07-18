@@ -1,10 +1,25 @@
 const mongoose = require('mongoose')
 
-const about = function(req, res, next){
+const add = function(req, res, next){
   const Mark = mongoose.model('Mark')
-  Mark.find({}, function (err, results) {
-    res.render('marks/add', { title: 'World Wall 1', marks: results })
-  })
+  let params = req.body
+  Mark.create(
+    {
+      sessionId: req.sessionID,
+      pointsJson: JSON.stringify(params.points),
+      color:      params.color,
+      opacity:    params.opacity,
+      brushSize:  params.brushSize,
+      hardness:   params.hardness
+    },
+    function(err, mark){
+      if(err){
+        res.send('error: '+err)
+      }else{
+        res.send('success')
+      }
+    }
+  )
 }
 
-module.exports = about
+module.exports = add

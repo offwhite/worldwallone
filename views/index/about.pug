@@ -11,5 +11,8 @@ html
       | Greetings from #{name}
       
     each mark in marks
+      hr
       .mark
         = mark.color
+        = mark.points()
+        

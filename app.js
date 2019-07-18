@@ -5,6 +5,7 @@ const fs = require('fs')
 const app = express()
 
 // middleware
+const session = require('express-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
@@ -13,11 +14,19 @@ const logger = require('morgan')
 const routes = require('./config/routes')
 
 // options
+const ENV = require('./config/variables')
 const port = 4000
 
 // middleware
-app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use(session({
+  secret: ENV.sessionKey,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(logger('tiny'))
 
 // static files

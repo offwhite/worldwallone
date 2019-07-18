@@ -6,6 +6,7 @@ class MarksController extends ActionController {
     this.category = 'marks'
   }
 
+  get(req, res, next){ self.controller('get', req, res, next) }
   add(req, res, next){ self.controller('add', req, res, next) }
 }
 
